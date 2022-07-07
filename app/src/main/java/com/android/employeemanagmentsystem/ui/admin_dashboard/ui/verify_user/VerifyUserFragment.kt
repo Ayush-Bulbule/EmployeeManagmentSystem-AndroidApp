@@ -62,29 +62,32 @@ class VerifyUserFragment : Fragment(R.layout.fragment_verify_user),
     private fun getEmployees() {
         val authRepository = AuthRepository()
         val authApi = AuthApi.invoke()
+        var emp_role = ""
 
 
         GlobalScope.launch {
 
-        val employee = authRepository.getEmployee(employeeDao)
+            val employee = authRepository.getEmployee(employeeDao)
+            emp_role = employee.role_id.toString()
+            if (employee.role_id.toString() == "2") {
+                employees = authRepository.getHodVerifications(employee.sevarth_id, authApi)
+                withContext(Dispatchers.Main) {
+                    Log.d("HODV",employees.toString())
+                    Toast.makeText(context, "$emp_role", Toast.LENGTH_SHORT).show()
+                    binding.recyclerView.apply {
+                        adapter = EmployeeVerificationsAdapter(employees, this@VerifyUserFragment)
+                        layoutManager = LinearLayoutManager(requireContext())
+                    }
+                }
+            } else {
+                employees = authRepository.getAllVerifications(authApi)
 
-            if(employee.role_id.toString() == "2"){
-                employees = authRepository.getHodVerifications(employee.sevarth_id,authApi)
                 withContext(Dispatchers.Main) {
                     binding.recyclerView.apply {
                         adapter = EmployeeVerificationsAdapter(employees, this@VerifyUserFragment)
                         layoutManager = LinearLayoutManager(requireContext())
                     }
                 }
-            }else{
-            employees = authRepository.getAllVerifications(authApi)
-
-            withContext(Dispatchers.Main) {
-                binding.recyclerView.apply {
-                    adapter = EmployeeVerificationsAdapter(employees, this@VerifyUserFragment)
-                    layoutManager = LinearLayoutManager(requireContext())
-                }
-            }
 
             }
         }
@@ -104,7 +107,8 @@ class VerifyUserFragment : Fragment(R.layout.fragment_verify_user),
                         if (employee.status == "true") {
                             withContext(Dispatchers.Main) {
                                 getEmployees()
-                                Toast.makeText(context, "Application Accepted!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Application Accepted!", Toast.LENGTH_SHORT)
+                                    .show()
                             }
 
 
@@ -132,11 +136,16 @@ class VerifyUserFragment : Fragment(R.layout.fragment_verify_user),
                 GlobalScope.launch {
                     try {
                         //making network call to get user credentials
-                        val employee: StatusResponse = authRepository.declineEmployee(employee.sevarth_id,authApi)
+                        val employee: StatusResponse =
+                            authRepository.declineEmployee(employee.sevarth_id, authApi)
                         //saving the employee in local database
                         if (employee.status == "true") {
-                            withContext(Dispatchers.Main){
-                                Toast.makeText(context, "Application Decline Success!", Toast.LENGTH_SHORT).show()
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(
+                                    context,
+                                    "Application Decline Success!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 getEmployees()
                             }
                         } else {

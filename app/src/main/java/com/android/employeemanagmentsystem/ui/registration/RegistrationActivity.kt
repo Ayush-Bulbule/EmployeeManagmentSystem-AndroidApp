@@ -16,6 +16,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import android.view.View
+import android.widget.Toast
 import com.android.employeemanagmentsystem.data.models.responses.*
 import com.android.employeemanagmentsystem.ui.admin_dashboard.AdminDashBoardActivity
 import com.android.employeemanagmentsystem.ui.employee_dashboard.EmployeeDashboard
@@ -89,7 +90,7 @@ class RegistrationActivity : AppCompatActivity() {
                             val status: StatusResponse = authRepository.newRegistration(email, password,role_id,org_id,dep_id,name,sevarth_id,hint_question,hint_answer, authApi)
 
                             //role id 1 is for employee
-
+                            Toast.makeText(this@RegistrationActivity,"Registered Success!",Toast.LENGTH_SHORT).show()
                             this@RegistrationActivity.move(LoginActivity::class.java, true)
 
                         }catch (e: Exception){
